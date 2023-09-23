@@ -1,7 +1,6 @@
 #include "ListOfLessons.hpp"
 
-inline unsigned getUint(std::string& data);
-inline std::string getStringInf(std::string& data);
+inline void fillDate(Date&, Parser*);
 
 ListOfLessons::ListOfLessons()
 {
@@ -19,7 +18,7 @@ ListOfLessons::~ListOfLessons()
 	}
 }
 
-void ListOfLessons::readFile(const std::string& filename)
+void ListOfLessons::readFile(const std::string& filename, Parser* handler)
 {
 	std::ifstream in(filename);
 	std::string data;
@@ -27,24 +26,21 @@ void ListOfLessons::readFile(const std::string& filename)
 	if (!in.is_open())
 	{
 		throw std::exception::exception(("Failed to open the file \"" + filename + "\"").c_str());
-		return;
 	}
 	while(std::getline(in, data))
 	{
 		StLesson* lesson = new StLesson();
 
+		handler->updateParsingData(data);
 		{
 			Date date = { 0 };
 
-			date.year = getUint(data);
-			date.month = getUint(data) - 1;
-			date.day = getUint(data);
-
+			fillDate(date, handler);
 			lesson->setDate(date);
 		}
 
-		lesson->setClassroom(getStringInf(data));
-		lesson->setTeacherName(getStringInf(data));
+		lesson->setClassroom(handler->getStringInf());
+		lesson->setTeacherName(handler->getStringInf());
 
 		lessons_.push_back(lesson);
 	}
@@ -58,37 +54,9 @@ void ListOfLessons::print() const noexcept
 }
 
 // gives first integer in the given string
-inline unsigned getUint(std::string& data)
+inline void fillDate(Date& fillingStruct, Parser* handler)
 {
-	std::string ret;
-	size_t index = 0;
-
-	while (index < data.length() && !isdigit(data[index])) ++index;
-	while (index < data.length() && isdigit(data[index]))
-	{
-		ret += data[index++];
-	}
-	data = data.substr(index);
-
-	return std::atoi(ret.c_str());
-}
-inline std::string getStringInf(std::string& data)
-{
-	std::string ret;
-	size_t index = 0;
-
-	while (index < data.length() && data[index++] != '\"');
-	while (index < data.length() && data[index] != '\"')
-	{
-		ret += data[index++];
-	}
-	
-	if (!index || index == data.length())
-	{
-		throw std::exception::exception("Invalid data. Missed \"");
-		return "";
-	}
-	data = data.substr(++index);
-	
-	return ret;
+	fillingStruct.year = handler->getUint();
+	fillingStruct.month = handler->getUint();
+	fillingStruct.day = handler->getUint();
 }

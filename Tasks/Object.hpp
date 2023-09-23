@@ -10,17 +10,18 @@ struct Date
 	uint8_t month;
 	uint8_t day;
 };
-
 struct Validation
 {
 	bool valid;
 
 protected:
+	virtual ~Validation() { }
 	virtual void setValid(bool) = 0;
 
 public:
 	bool isValid() const noexcept;
 };
+
 class StLesson : virtual public Validation
 {
 public:

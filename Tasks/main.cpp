@@ -1,7 +1,9 @@
 #include "ListOfLessons.hpp"
+#include "stringProcessing.h"
 
 void test()
 {
+	StringProcessing handler;
 	std::vector<std::string> filenames = {
 		"1.txt",
 		"2.txt",
@@ -15,7 +17,7 @@ void test()
 
 		std::cout << "\n======== TEST FILE: " << filename << " ==========\n";
 
-		lol.readFile(filename);
+		lol.readFile(filename, (Parser*)&handler);
 		lol.print();
 
 		std::cout << "================ NEXT ===================\n\n";
@@ -27,6 +29,5 @@ void test()
 int main(void)
 {
 	test();
-
 	return 0;
 }
